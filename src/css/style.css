@@ -1,7 +1,6 @@
 @charset "utf-8";
 
 html, body {
-  height: 100%;
   margin: 0;
   font-family: 'Nunito Sans', sans-serif;
   color: #D7DADC;
@@ -9,7 +8,7 @@ html, body {
 }
 
 main {
-  height: 100%;
+  min-height: 100svh;
   display: flex;
   justify-content: center;
   align-items: center; 
@@ -32,13 +31,26 @@ main {
   flex-wrap: wrap;
 }
 
+.flex-column {
+  flex-direction: column;
+}
+
 .gap-20 {
   gap: 20px;
+}
+
+.gap-10 {
+  gap: 10px;
 }
 
 .center {
   justify-content: center;
   align-items: center;
+}
+
+.mtb-20 {
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .col {
@@ -61,5 +73,11 @@ main {
 @media screen and (max-width: 775px) {
   .col {
     width: calc(50% - 15px);
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .col {
+    width: 300px;
   }
 }
