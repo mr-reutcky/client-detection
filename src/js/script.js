@@ -18,13 +18,13 @@ const accuracy = select('.accuracy');
 const cpu = select('.cpu');
 const language = select('.language');
 const engine = select('.browser');
-const level =  select('.level');
+const level = select('.level');
 const charging = select('.status');
+const online = select('.fa-signal');
 
 // Did a buch of reasearh and this is the only way I found to get the OS of a
 // user. I know that using switch(true) is a bad practice but I was rushed for
 // time and it works
-
 function getOS() {
   const userAgent = navigator.userAgent.toLowerCase();
   let userOs = 'Unknown OS';
@@ -51,6 +51,8 @@ function getOS() {
   os.innerText = userOs;
 }
 
+// Used MDN and chatGBT to learn how to get this code but, used it to learn 
+// and didnt just get it to make it for me
 function getBrowser() {
   const userAgent = navigator.userAgent.toLowerCase();
   let browser = 'Unknown Browser';
@@ -85,42 +87,58 @@ function getUserLocation() {
     navigator.geolocation.getCurrentPosition((position) => {
       const lat = position.coords.latitude;
       const long = position.coords.longitude;
-      latitude.innerText = `${lat}°`;
-      longitude.innerText = `${long}°`;
+      latitude.innerText = `${lat.toFixed(4)}°`;
+      longitude.innerText = `${long.toFixed(4)}°`;
       const acc = position.coords.accuracy.toFixed(0);
-      accuracy.innerText = `${acc}m`;
+      accuracy.innerText = `+/-${acc}m`;
     });
   } else {
     latitude.innerText = 'N/A';
     longitude.innerText = 'N/A';
+    accuracy.innerText = 'N/A';
   }
 }
 
-
+// Used MDN and chatGBT to learn how to get this code but, used it as a 
+// learning tool and not just to make the code
 function getBatteryStatus() {
-    if ('getBattery' in navigator) {
-        navigator.getBattery().then(function(battery) {
-            let level = battery.level * 100;
-            let isCharging = battery.charging ? "Charging" : "Not Charging";
-            level.innerText = `${level}%`;
-            charging.innerText = isCharging;
-        });
-    } else {
-      level.innerText = 'Battery info not avalible';
-      charging.innerText = 'Battery info not avalible';
-    }
+  if ('getBattery' in navigator) {
+    navigator.getBattery().then(function (battery) { 
+      // The then() method handles the result of a promise when it’s 
+      // successfully resolved. It takes a function that runs when the promise 
+      // completes, allowing you to process the returned data. For example, 
+      // with navigator.getBattery(), then() allows you to access battery 
+      // details once the data is available and then update the UI.
+      const updateBatteryInfo = () => {
+        let levelValue = battery.level * 100;
+        let isCharging = battery.charging ? 'Charging' : 'Not Charging';
+        level.innerText = `${levelValue.toFixed(0)}%`;
+        charging.innerText = isCharging;
+      };
+
+      updateBatteryInfo();
+
+      listen('chargingchange', battery, updateBatteryInfo);
+      listen('levelchange', battery, updateBatteryInfo);
+    });
+  } else {
+    level.innerText = 'Battery info not available in this browser';
+    charging.innerText = 'Battery info not available in this browser';
+  }
 }
 
-
+// Used  MDN to learn how this works
 function getSystemLanguage() {
   const systemLanguage = navigator.language || 'Unknown';
-
   let formattedLanguage;
+  console.log('Detected system language:', systemLanguage); // Debugging line
+
   // Used chatGBT for the switch cash as i didnt want to look up all the
   // different variations
   switch (systemLanguage) {
     case 'en':
     case 'en-US':
+    case 'en-CA':
     case 'en-GB':
       formattedLanguage = 'English';
       break;
@@ -162,6 +180,16 @@ function getSystemLanguage() {
   language.innerText = formattedLanguage;
 }
 
+function networkStatus() {
+  // Get the current network status
+  const networkStatus = navigator.onLine;
+  if (networkStatus) {
+    online.style.color = '#00e600';
+  } else {
+    online.style.color = '#e60000';
+  }
+}
+
 listen('load', window, () => {
   windowInfo();
   getOS();
@@ -169,6 +197,7 @@ listen('load', window, () => {
   getSystemLanguage();
   getBrowser();
   getBatteryStatus();
+  networkStatus();
 });
 listen('resize', window, () => {
   windowInfo();
