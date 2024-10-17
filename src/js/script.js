@@ -180,8 +180,8 @@ function getSystemLanguage() {
   language.innerText = formattedLanguage;
 }
 
+// Used MDN to learn how to use this and make it work
 function networkStatus() {
-  // Get the current network status
   const networkStatus = navigator.onLine;
   if (networkStatus) {
     online.style.color = '#00e600';
@@ -199,6 +199,7 @@ listen('load', window, () => {
   getBatteryStatus();
   networkStatus();
 });
+
 listen('resize', window, () => {
   windowInfo();
 });
